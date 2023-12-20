@@ -1,6 +1,5 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadGatewayException, BadRequestException, Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import { readFileSync } from 'fs';
 import { PrismatasksRepository } from './repositories/prisma/PrismaTasksRepository';
 import { TaskEntity } from './task.entity';
 
@@ -32,8 +31,17 @@ export class TasksService {
         })
     }
 
-    async createCSV(file) {
-        
+    async createCSV(file: Express.Multer.File): Promise<void> {
+        try {
+            await this.tasksRepository.createCSV(file);
+        } catch (error) {
+            if (error instanceof BadGatewayException) {
+                console.error('Erro na criação do CSV:', error.message);
+            } else {
+                console.error('Erro desconhecido na criação do CSV:', error);
+            }
+            throw error;
+        }
     }
 
     async findAll() {

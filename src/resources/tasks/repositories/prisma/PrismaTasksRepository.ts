@@ -1,7 +1,8 @@
+import { BadGatewayException } from "@nestjs/common";
+import { readFileSync } from "fs";
 import { prisma } from "../../../../database/PrismaService";
 import { TaskEntity } from "../../task.entity";
 import { CreateTaskData, TasksRepository } from "../task.repository";
-import { readFileSync } from 'fs';
 
 export class PrismatasksRepository implements TasksRepository {
     async create(data: CreateTaskData) {
@@ -14,7 +15,46 @@ export class PrismatasksRepository implements TasksRepository {
     }
 
     async createCSV(file): Promise<void> {
-        
+        let createdTask = [];
+        let titles = [];
+
+        const csvFile = await readFileSync(`./uploads/data.csv`)
+
+        const lines = csvFile.toString().split('\n')
+        let isFirstLine = true;
+        let isError = false;
+
+        for (const line of lines) {
+            const task = line.split(',')
+
+            if (!isFirstLine) {
+                const existTasks = await prisma.task.findFirst({
+                    where: {
+                        title: task[0].trim(),
+                    },
+                })
+
+                if (existTasks) {
+                    isError = true;
+                    titles.push(existTasks.title)
+                    break
+                }
+                else {
+                    createdTask.push(
+                        await prisma.task.create({
+                            data: {
+                                title: task[0].trim(),
+                                description: task[1].trim(),
+                            },
+                        })
+                    )
+                }
+            }
+            isFirstLine = false;
+        }
+        if (isError) {
+            throw new BadGatewayException('')
+        }
     }
 
     async findAll(): Promise<CreateTaskData[]> {
