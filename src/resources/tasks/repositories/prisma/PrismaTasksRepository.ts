@@ -18,7 +18,9 @@ export class PrismatasksRepository implements TasksRepository {
         let createdTask = [];
         let titles = [];
 
-        const csvFile = await readFileSync(`./uploads/data.csv`)
+        console.log(file)
+
+        const csvFile = await readFileSync(`./uploads/${file.filename}`)
 
         const lines = csvFile.toString().split('\n')
         let isFirstLine = true;
