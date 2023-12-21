@@ -1,5 +1,4 @@
 import { BadGatewayException, BadRequestException, Injectable } from '@nestjs/common';
-import { randomUUID } from 'crypto';
 import { PrismatasksRepository } from './repositories/prisma/PrismaTasksRepository';
 import { TaskEntity } from './task.entity';
 
@@ -25,7 +24,7 @@ export class TasksService {
         }
 
         await this.tasksRepository.create({
-            id: randomUUID(),
+            id: '1',
             title,
             description,
         })
