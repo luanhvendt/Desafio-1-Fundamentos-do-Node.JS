@@ -59,7 +59,6 @@ $ npm run start:prod
 Para rodar os testes, use:
 
 ```bash
-# unit tests
 $ npm run test
 
 ```
