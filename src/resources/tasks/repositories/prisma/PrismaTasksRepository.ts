@@ -1,4 +1,4 @@
-import { BadGatewayException } from "@nestjs/common";
+import { BadRequestException } from "@nestjs/common";
 import { readFileSync } from "fs";
 import { prisma } from "../../../../database/PrismaService";
 import { TaskEntity } from "../../task.entity";
@@ -17,8 +17,6 @@ export class PrismatasksRepository implements TasksRepository {
     async createCSV(file): Promise<void> {
         let createdTask = [];
         let titles = [];
-
-        console.log(file)
 
         const csvFile = await readFileSync(`./uploads/${file.filename}`)
 
@@ -55,7 +53,7 @@ export class PrismatasksRepository implements TasksRepository {
             isFirstLine = false;
         }
         if (isError) {
-            throw new BadGatewayException('')
+            throw new BadRequestException(`Tasks already exists.`)
         }
     }
 
