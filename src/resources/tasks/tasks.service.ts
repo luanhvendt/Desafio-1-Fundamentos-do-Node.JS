@@ -1,5 +1,5 @@
 import { BadGatewayException, BadRequestException, Injectable } from '@nestjs/common';
-import { PrismatasksRepository } from './repositories/prisma/PrismaTasksRepository';
+import { TasksRepository } from './repositories/task.repository';
 import { TaskEntity } from './task.entity';
 
 interface Task {
@@ -11,7 +11,7 @@ interface Task {
 @Injectable()
 export class TasksService {
     constructor(
-        private tasksRepository: PrismatasksRepository,
+        private tasksRepository: TasksRepository,
     ) { }
 
     async create({ title, description }: Task) {
@@ -23,11 +23,13 @@ export class TasksService {
             throw new Error('description is required.')
         }
 
-        await this.tasksRepository.create({
+        const task = await this.tasksRepository.create({
             id: '1',
             title,
             description,
         })
+
+        return task
     }
 
     async createCSV(file: Express.Multer.File): Promise<void> {
@@ -71,5 +73,7 @@ export class TasksService {
 
     async delete(id: string) {
         const task = await this.tasksRepository.delete(id)
+
+        return task
     }
 }

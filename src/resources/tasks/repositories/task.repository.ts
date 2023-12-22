@@ -7,11 +7,11 @@ export interface CreateTaskData {
     completedAt?: Date;
 }
 
-export interface TasksRepository {
-    create(data: CreateTaskData): Promise<void>
-    createCSV(file: any): Promise<void>
-    findAll(): Promise<CreateTaskData[]>
-    findUnique(id: string): Promise<CreateTaskData>
-    update(id: string, dataTask: TaskEntity): Promise<TaskEntity>
-    delete(id: string): Promise<void>
+export abstract class TasksRepository {
+    abstract create(data: CreateTaskData): Promise<void>
+    abstract createCSV(file: any): Promise<void>
+    abstract findAll(): Promise<CreateTaskData[]>
+    abstract findUnique(id: string): Promise<CreateTaskData>
+    abstract update(id: string, dataTask: TaskEntity): Promise<TaskEntity>
+    abstract delete(id: string): Promise<void>
 }

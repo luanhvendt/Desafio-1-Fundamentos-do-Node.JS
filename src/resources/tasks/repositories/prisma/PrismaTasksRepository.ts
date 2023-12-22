@@ -1,12 +1,16 @@
-import { BadRequestException } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { readFileSync } from "fs";
-import { prisma } from "../../../../database/PrismaService";
+import { PrismaService } from "../../../../database/PrismaService";
 import { TaskEntity } from "../../task.entity";
 import { CreateTaskData, TasksRepository } from "../task.repository";
 
-export class PrismatasksRepository implements TasksRepository {
+// let prisma: PrismaService
+@Injectable()
+export class PrismaTasksRepository implements TasksRepository {
+    constructor(private prisma: PrismaService) { }
+
     async create(data: CreateTaskData) {
-        await prisma.task.create({
+        await this.prisma.task.create({
             data: {
                 title: data.title,
                 description: data.description,
@@ -28,7 +32,7 @@ export class PrismatasksRepository implements TasksRepository {
             const task = line.split(',')
 
             if (!isFirstLine) {
-                const existTasks = await prisma.task.findFirst({
+                const existTasks = await this.prisma.task.findFirst({
                     where: {
                         title: task[0].trim(),
                     },
@@ -41,7 +45,7 @@ export class PrismatasksRepository implements TasksRepository {
                 }
                 else {
                     createdTask.push(
-                        await prisma.task.create({
+                        await this.prisma.task.create({
                             data: {
                                 title: task[0].trim(),
                                 description: task[1].trim(),
@@ -58,13 +62,12 @@ export class PrismatasksRepository implements TasksRepository {
     }
 
     async findAll(): Promise<CreateTaskData[]> {
-        const tasks = await prisma.task.findMany()
-
+        const tasks = await this.prisma.task.findMany()
         return tasks
     }
 
     async findUnique(id: string): Promise<CreateTaskData> {
-        const task = await prisma.task.findUnique({
+        const task = await this.prisma.task.findUnique({
             where: {
                 id,
             }
@@ -75,7 +78,7 @@ export class PrismatasksRepository implements TasksRepository {
     }
 
     async update(id: string, datatask: TaskEntity): Promise<CreateTaskData> {
-        const task = await prisma.task.update({
+        const task = await this.prisma.task.update({
             where: {
                 id,
             },
@@ -90,7 +93,7 @@ export class PrismatasksRepository implements TasksRepository {
     }
 
     async delete(id: string) {
-        const task = await prisma.task.delete({
+        const task = await this.prisma.task.delete({
             where: {
                 id,
             }

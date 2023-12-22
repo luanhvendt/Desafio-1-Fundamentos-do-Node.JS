@@ -5,12 +5,14 @@ export class InMemorytasksRepository implements TasksRepository {
     public items: any = []
 
     async create(data: CreateTaskData) {
-        this.items.push({
+        const task = {
             id: '1',
             title: data.title,
             description: data.description,
             completedAt: new Date(data.completedAt) ?? null
-        });
+        };
+
+        this.items.push(task)
     }
 
     async createCSV(file: any): Promise<void> {
