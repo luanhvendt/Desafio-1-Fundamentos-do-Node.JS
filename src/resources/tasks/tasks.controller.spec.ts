@@ -1,11 +1,9 @@
 import { INestApplication } from '@nestjs/common'
 import { Test } from '@nestjs/testing'
 import * as request from 'supertest'
-import { InMemorytasksRepository } from '../../../test/repositories/InMemoryTasksRepository'
 import { AppModule } from '../../app.module'
 import { PrismaService } from '../../database/PrismaService'
 import { TasksModule } from './tasks.module'
-import { TasksService } from './tasks.service'
 
 describe('TasksController', () => {
     let app: INestApplication
@@ -23,18 +21,80 @@ describe('TasksController', () => {
     })
 
     test('[GET] /tasks', async () => {
-        const inMemoryTasksRepository = new InMemorytasksRepository()
-        const tasksService = new TasksService(inMemoryTasksRepository)
-
-        await tasksService.create({ title: 'titulo1', description: 'descricao' })
-        await tasksService.create({ title: 'titulo2', description: 'descricao' })
-
         const response = await request(app.getHttpServer())
             .get('/tasks')
             .send()
 
         expect(response.statusCode).toBe(200)
 
+    })
+
+    test('[GET] /tasks/:id', async () => {
+        const createdTask = await request(app.getHttpServer())
+            .post('/tasks')
+            .send({ title: 'Nova Task', description: 'descricao' })
+            .expect(201)
+
+
+        const response = await request(app.getHttpServer())
+            .get(`/tasks/${createdTask.body.id}`)
+            .expect(200)
+
+        expect(response.statusCode).toBe(200)
+        expect(response.body).toEqual(expect.objectContaining({
+            title: 'Nova Task',
+        }))
+
+    })
+
+    test('[POST] /tasks', async () => {
+        const response = await request(app.getHttpServer())
+            .post('/tasks')
+            .send({ title: 'test e2e Post', description: 'descricao' })
+            .expect(201)
+
+        expect(response.body).toEqual(expect.objectContaining({
+            title: 'test e2e Post',
+        }))
+    })
+
+    test('[PUT] /tasks/:id', async () => {
+        const createResponse = await request(app.getHttpServer())
+            .post('/tasks')
+            .send({ title: 'taskToUpdate', description: 'descricao' })
+            .expect(201)
+
+        expect(createResponse.body).toEqual(expect.objectContaining({
+            title: 'taskToUpdate',
+        }))
+
+        const taskId = createResponse.body.id
+
+        const response = await request(app.getHttpServer())
+            .put(`/tasks/${taskId}`)
+            .send({ title: 'updatedTask', description: 'updatedDescricao' })
+            .expect(200)
+
+        expect(response.body).toEqual(expect.objectContaining({
+            title: 'updatedTask',
+        }))
+    })
+
+    test('[DELETE] /tasks', async () => {
+        const createResponse = await request(app.getHttpServer())
+            .post('/tasks')
+            .send({ title: 'taskToUpdate', description: 'descricao' })
+            .expect(201)
+
+        expect(createResponse.body).toEqual(expect.objectContaining({
+            title: 'taskToUpdate',
+        }))
+
+        const taskId = createResponse.body.id
+
+        const deleteResponse = await request(app.getHttpServer())
+            .delete(`/tasks/${taskId}`)
+            .expect(204)
     })
 
 })

@@ -1,4 +1,5 @@
 import { BadGatewayException, BadRequestException, Injectable } from '@nestjs/common';
+import { randomUUID } from 'crypto';
 import { TasksRepository } from './repositories/task.repository';
 import { TaskEntity } from './task.entity';
 
@@ -24,7 +25,7 @@ export class TasksService {
         }
 
         const task = await this.tasksRepository.create({
-            id: '1',
+            id: randomUUID(),
             title,
             description,
         })

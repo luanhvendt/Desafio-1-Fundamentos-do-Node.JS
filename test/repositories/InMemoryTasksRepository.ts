@@ -5,7 +5,7 @@ export class InMemorytasksRepository implements TasksRepository {
     public items: any = []
 
     async create(data: CreateTaskData) {
-        const task = {
+        const task: CreateTaskData = {
             id: '1',
             title: data.title,
             description: data.description,
@@ -13,6 +13,7 @@ export class InMemorytasksRepository implements TasksRepository {
         };
 
         this.items.push(task)
+        return task
     }
 
     async createCSV(file: any): Promise<void> {

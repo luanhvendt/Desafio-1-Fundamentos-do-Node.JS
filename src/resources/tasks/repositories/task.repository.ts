@@ -8,7 +8,7 @@ export interface CreateTaskData {
 }
 
 export abstract class TasksRepository {
-    abstract create(data: CreateTaskData): Promise<void>
+    abstract create(data: CreateTaskData): Promise<CreateTaskData>
     abstract createCSV(file: any): Promise<void>
     abstract findAll(): Promise<CreateTaskData[]>
     abstract findUnique(id: string): Promise<CreateTaskData>

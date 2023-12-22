@@ -10,12 +10,14 @@ export class PrismaTasksRepository implements TasksRepository {
     constructor(private prisma: PrismaService) { }
 
     async create(data: CreateTaskData) {
-        await this.prisma.task.create({
+        const task = await this.prisma.task.create({
             data: {
                 title: data.title,
                 description: data.description,
             }
         })
+
+        return task
     }
 
     async createCSV(file): Promise<void> {
